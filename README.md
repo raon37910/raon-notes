@@ -1,31 +1,13 @@
-# Turborepo starter with shadcn/ui
+# Turborepo with shadcn/ui and story book
 
-![Static Badge](https://img.shields.io/badge/shadcn%2Fui-0.8.0-blue?link=https%3A%2F%2Fgithub.com%2Fshadcn%2Fui)
+Turborepo shadcn/ui tailwind storybook 세팅  
+[베이스프로젝트](https://github.com/dan5py/turborepo-shadcn-ui)
 
-This is Turborepo starter with shadcn/ui pre-configured.
+> [!NOTE] > `pnpm` 을 패키지 매니저로 사용하고 있습니다.
 
-> [!NOTE]
-> This example uses `pnpm` as package manager.
+## 사용 방법
 
-[npm version](https://github.com/dan5py/turborepo-shadcn-ui/tree/npm)
-[bun version](https://github.com/dan5py/turborepo-shadcn-ui/tree/bun)
-
-## Using this example
-
-Clone the repository:
-
-```sh
-git clone https://github.com/dan5py/turborepo-shadcn-ui.git
-```
-
-Install dependencies:
-
-```sh
-cd turborepo-shadcn-ui
-pnpm install
-```
-
-### Add ui components
+### 컴포넌트 추가
 
 Use the pre-made script:
 
@@ -33,80 +15,51 @@ Use the pre-made script:
 pnpm ui add <component-name>
 ```
 
-> This works just like the `shadcn/ui` CLI.
+> `shadcn/ui` CLI를 사용하는 것 처럼 동작합니다.
 
 ### Add a new app
 
-Turborepo offer a simple command to add a new app:
+터보 레포를 이용해 새로운 패키지를 추가합니다.
 
 ```sh
 pnpm turbo gen workspace --name <app-name>
 ```
 
-This will create a new empty app in the `apps` directory.
+`apps` directory에 새로운 프로젝트를 추가합니다.
 
-If you want, you can copy an existing app with:
+새로운 프로젝트를 복재하기를 원한다면 아래 커맨드를 입력하세요.
 
 ```sh
 pnpm turbo gen workspace --name <app-name> --copy
 ```
 
-> [!NOTE]
-> Remember to run `pnpm install` after copying an app.
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library (🚀 powered by **shadcn/ui**)
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+> [!NOTE] > `pnpm install` 을 까먹지 마세요!
 
 ### Utilities
 
-This Turborepo has some additional tools already setup for you:
+TypeScript, EsLink, Prettier 설정이 추가 되어 있습니다.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- [TypeScript](https://www.typescriptlang.org/)
+- [ESLint](https://eslint.org/)
+- [Prettier](https://prettier.io)
 
 ### Build
 
-To build all apps and packages, run the following command:
+빌드를 하려면 아래 명령어를 입력하세요
 
 ```sh
-cd turborepo-shadcn-ui
+cd 디렉토리
 pnpm build
 ```
 
 ### Develop
 
-To develop all apps and packages, run the following command:
+개발 모드로 실행 시키려면 아래 명령어를 입력하세요
 
 ```sh
-cd turborepo-shadcn-ui
+cd 디렉토리
 pnpm dev
 ```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd turborepo-shadcn-ui
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
 
 ```sh
 npx turbo link
@@ -114,7 +67,7 @@ npx turbo link
 
 ## Useful Links
 
-Learn more about the power of Turborepo:
+터보래포
 
 - [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
 - [Caching](https://turbo.build/repo/docs/core-concepts/caching)
@@ -123,6 +76,6 @@ Learn more about the power of Turborepo:
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
 
-Learn more about shadcn/ui:
+shadcn/ui
 
-- [Documentation](https://ui.shadcn.com/docs)
+- [shadcn](https://ui.shadcn.com/docs)
