@@ -1,9 +1,5 @@
-import { Button } from '@repo/ui/components/ui/button'
+import { redirect } from 'next/navigation'
 
 export default function Page() {
-  return (
-    <main>
-      <Button>Click me</Button>
-    </main>
-  )
+  redirect('/blog')
 }
