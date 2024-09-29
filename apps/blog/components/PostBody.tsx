@@ -28,9 +28,6 @@ export default function PostBody({ post }: { post: Post }) {
             [
               // @ts-ignore
               rehypePrettyCode,
-              {
-                theme: { dark: 'github-dark-dimmed', light: 'github-light' },
-              },
             ],
             // toc id를 추가하고 제목을 연결
             rehypeSlug,

@@ -26,7 +26,7 @@ function Sidebar({ categoryList, postList }: SidebarProps) {
   }
 
   return (
-    <aside className="bg-white flex flex-col justify-between gap-16 relative  rounded-lg py-4 px-6 overscroll-none overflow-y-auto shrink-0 z-10 max-w-64 dark:bg-black">
+    <aside className="bg-white flex flex-col justify-between gap-16 relative rounded-lg py-4 px-6 overscroll-none overflow-y-auto shrink-0 z-10 max-w-64 dark:bg-black">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-4">
           <div className="flex justify-center items-cente mb-2">

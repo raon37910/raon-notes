@@ -14,6 +14,12 @@ export const MdxComponents: MDXComponents = {
   h4: (props) => <h4 {...props} className="text-green-600" />,
   h5: (props) => <h5 {...props} className="text-green-600" />,
   h6: (props) => <h6 {...props} className="text-green-600" />,
+  strong: (props) => (
+    <strong
+      {...props}
+      className="inline shadow-[inset_0_-120px_0_#D9FCDB] font-bold dark:shadow-[inset_0_-120px_0_#000] dark:text-green-400"
+    />
+  ),
   code: (props) => (
     <code
       {...props}
