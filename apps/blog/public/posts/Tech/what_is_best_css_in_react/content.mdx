@@ -1,0 +1,188 @@
+---
+title: '어떤 CSS 라이브러리를 쓰는 것이 좋을까??'
+date: 2024-10-01
+desc: CSS 라이브러리 발전사와 서버 컴포넌트에 관하여..
+thumbnail: /posts/Tech/what_is_best_css_in_react/thumbnail.png
+---
+
+<Callout type="warn">
+  CSS 라이브러리 발전사와, 서버 컴포넌트에 대해 이야기해요.
+  초보 엔지니어의 경험을 바탕으로 작성 되어 틀린 부분이 있을 수 있어요.
+</Callout>
+
+블로그를 만들면서 고민했던 점 중 하나가 CSS 라이브러리였어요.
+오늘은 React에서 CSS를 적용하는 방법들에 대해 살펴보고 블로그를 만들면서 Tawilwind를 선택한 이유를 적어보려고 해요.
+
+## Inline Style
+```tsx
+function App() {
+  return <div style={{ color: 'red' }}>Hello World</div>
+}
+```
+첫 번째 방법은 style 속성을 이용하여 css를 적용하는 방법이에요.
+간편하게 CSS를 적용할 수 있다는 장점이 있고, 스타일이 컴포넌트에 직접 연결되어 있어 다른 컴포넌트로 전파될 가능성이 없어요 또한 SSR에서도 안전하죠.
+
+하지만, **스타일 관련 코드를 재사용하기 어렵다는 단점이 있고 미디어 쿼리, 가상 클래스 같은 일부 기능이 지원되지 않아요.**
+저는 이러한 단점 때문에 style 속성을 사용하는 방식을 선택하지 않았어요.
+
+## CSS Module 시리즈
+```tsx
+import styles from './App.module.css'
+
+function App() {
+  return <div className={styles.container}>Hello World</div>
+}
+```
+리액트에서는 일반적인 HTML CSS를 사용하는 방식과 달리, CSS 클래스 이름을 충돌하는 것을 막기 위해서 module css를 사용해요.
+이를 적용하면 자동으로 고유한 클래스 이름을 생성해서, 전역 스코프에서 클래스 이름 충돌을 방지 할 수 있어요.
+
+CSS파일을 사용할 때의 장점을 거의 계승하는데요, 클래스마다 모듈화 하여 스타일을 관리 할 수 있고, 미디어 쿼리, 가상 클래스 등의 기능도 지원해요.
+또한 SSR에서도 안전하게 사용할 수 있다는 장점이 있어요.
+
+단점으로는 클래스 이름을 자동으로 생성하기 때문에 CSS 디버깅이 조금 불편할 수 있어요.
+또한 동적으로 스타일을 적용하기가 조금 까다로울 수 있어요 아래 코드를 볼게요.
+
+```tsx
+function Button({ type, size }) {
+  // type에 따라 primary 또는 secondary 클래스를 적용하고, size에 따라 large 또는 small 클래스를 적용
+  const buttonClass = `${styles.button} ${type === 'primary' ? styles.primary : styles.secondary} ${size === 'large' ? styles.large : styles.small}`;
+
+  return <button className={buttonClass}>Click Me</button>;
+}
+```
+
+동적으로 클래스 이름을 만들어주기 위해서 자바스크립트 코드를 작성하는데 가독성이 조금 떨어지는 느낌이에요.
+이러한 불편함을 개선하기 위해서 classnames라는 라이브러리를 사용하기도 하는 것 같아요.
+저는 **컴포넌트와 css가 분리되어 있는게 보기 불편해서 css파일을 사용하는 방식을 선택하지는 않았어요.**
+
+## CSS in JS 시리즈 (Styled Components, Emotion)
+이번에는 꽤나 인기를 많이 받은 CSS IN JS 라이브러리에 대해서 이야기 해볼게요
+CSS 파일에 스타일을 작성하는 방식과 달리 자바스크립트 파일에서 스타일을 작성하고 이를 독립적인 컴포넌트로 활용할 수 있도록 해요.
+
+```tsx
+import styled from 'styled-components'
+
+const Button = styled.button`
+  background-color: blue;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+`
+
+function App() {
+  return <Button>Click Me</Button>
+}
+```
+스타일 코드에 자바스크립트를 사용할 수 있다는 점 때문에 동적 스타일을 만들어 내는게 엄청 편리해요!
+또한 각 스타일이 컴포넌트에 한정되어 적용되어 스타일 충돌 문제를 해결해요
+무엇보다 가장 큰 장점은 React와 같은 컴포넌트 라이브러리와 잘 어울려서 코드를 직관적으로 관리하기가 유용해요.
+
+단점으로는, 번들 크기가 증가하고, 런타임에 수 많은 스타일을 동적으로 생성하다 보니 성능 문제가 발생할 수 있다고 해요.
+
+<Callout type="warn">
+  CSS IN JS 라이브러리 사용으로 인한 성능 이슈 사례가 문제가 된 것을 확인 하지 못했어요 🤔
+</Callout>
+
+[CSS 적용 방식에 따른 번들 사이즈 벤치마크](https://dev.to/alexsergey/css-modules-vs-css-in-js-who-wins-3n25) 글을 살펴보면 CSS Module과 CSS IN JS의 번들 사이즈가 30kb 정도 차이가 있어요.
+**많은 기업에서 채택 했던 기술인 만큼 번들 사이즈 증가, 성능 문제가 그렇게 크게 와닿지는 않았었고 컴포넌트 기반 개발에 잘 어울린다고 생각해서 개인적으로 자주 사용하던 라이브러리 였어요.**
+
+## 서버 컴포넌트
+스타일 이야기는 잠시 멈추고, 서버 컴포넌트에 대해 이야기 해볼게요.
+서버 컴포넌트 글을 읽으 실 때 CSS IN JS 라이브러리가 런타임에 스타일을 생성한다는 것을 기억 해주세요!
+
+<img width="674" alt="image" src="https://github.com/user-attachments/assets/f38d6005-b7c6-4356-b47c-583045e32a15" />
+
+React18 버전 이후로는 서버 컴포넌트를 사용할 수 있는데요, 서버 컴포넌트는 서버에서 1번만 실행되는 컴포넌트를 말해요.
+Hydration이 필요한 컴포넌트만 클라이언트에서 실행되어 TTI(Time to Interactive)를 줄일 수 있어요.
+
+**CSS IN JS 라이브러리는 런타임에 스타일을 동적으로 생성 해줘야 하기 때문에 반드시 클라이언트에서 실행 되어야 하잖아요. 그래서 서버 컴포넌트에서 사용하기 어려워요.**
+
+저는 서버 컴포넌트를 사용하고 싶었거든요, 그래서 정착할 CSS 라이브러리를 찾아보게 되었어요.
+
+## Vanilla Extract and Panda CSS
+Vanilla Extract와 Panda CSS는 Build Time에 CSS를 생성해주는 라이브러리에요.
+
+### Panda CSS
+<Callout type="warn">
+  Panda CSS는 직접 사용해보지는 않았고, 다른 분들의 블로그를 참조하여 작성했어요.
+</Callout>
+
+```tsx
+import { css } from "./styled-system/css"
+import './App.css';
+import logo from './logo.svg';
+import "./index.css"
+import './styled-system/styles.css'
+
+
+function App() {
+  return (
+    <div className={css({ bg: 'red.400' })}>
+      hi
+      <img src={logo} className="App-logo" alt="logo" />
+    </div>)
+
+}
+
+export default App;
+// 코드 출처: https://velog.io/@jay/Panda-CSS [단테 블로그]
+```
+Panda CSS 소스 코드에서 유틸리티 클래스와 패턴을 추출하고, 이를 정적으로 CSS 파일로 생성한다고 해요.
+JS코드를 사용하여 코드를 작성하지만 빌드 타임에 CSS 파일로 변환되기 때문에 CSS IN JS 라이브러리에서 발생하는 성능 문제를 줄일 수 있어요.
+
+Panda CSS는 프로젝트를 세팅하면 styled-system에 생성된 코드를 이용하여 스타일을 적용할 수 있어요.
+미리 정의된 스타일을 사용한다는 점에서 Tailwind CSS와 비슷한 모양을 가지고 있네요!
+
+이 라이브러리를 검토 했을 때 Vanilla Extract 방식이 더 마음에 들어서 굳이 사용하지는 않았어요.
+
+### Vanilla Extract 
+Vanilla Extract는 빌드 타임에 CSS를 생성하는 라이브러리에요.
+.css.ts 파일을 생성하고 이를 이용하여 스타일을 적용해요.
+
+```tsx
+import { style } from '@vanilla-extract/css';
+
+export const container = style({
+  padding: 10
+});
+```
+
+```tsx
+import { container } from './styles.css.ts';
+
+document.write(`
+  <section class="${container}">
+    ...
+  </section>
+`);
+```
+
+타입스크립트를 사용할 수 있다는 점에서 동적인 CSS를 생성하기가 쉽고, 빌드 타임에 CSS를 생성하기 때문에 오버헤드가 적어요
+panda css를 사용하는 것보다 emotion이랑 비슷해서 원래는 이 라이브러리를 선택하려 했어요.
+
+## Tailwind CSS 그런데 Shadcn V0를 곁들인..
+Tailwind CSS는 유틸리티 클래스 기반의 CSS 프레임워크에요.
+예전에 BootStrap 썼을 때 좀 불편했어서 저는 별로 관심이 없었던 프레임워크였어요.
+
+하지만 Shadcn이라는 라이브러리를 보고 Tailwind CSS를 사용하기로 결정했어요.
+Shadcn은 일반적인 컴포넌트 라이브러리와 달리, 패키지 매니저를 통해 설치하지 않고 컴포넌트 코드를 프로젝트 내부에 직접 생성 해줘요.
+이렇게 복사된 코드는 프로젝트에 맞게 수정할 수 있어요.
+
+<img width="674" alt="image" src="https://github.com/user-attachments/assets/5e00df89-3b89-422d-b342-57fea207f85f" />
+<img width="674" alt="image" src="https://github.com/user-attachments/assets/e0c1f6d1-ba0a-4c5d-b5bc-cf249c363d3e" />
+
+Vercel V0와 Shadcn을 이용하면 손 쉽게 컴포넌트를 생성 할 수 있어요.
+설치형으로 사용되는 것이 아니라 코드를 복사하여 사용하는 형태이기 때문에 기본 구조를 빠르게 만들고 커스터마이징 할 수 있어요.
+**서버 컴포넌트에서 사용 가능 + 오버 헤드 적음 + AI와 Shadcn을 이용해 쉽게 컴포넌트를 생성할 수 있다는 점 때문에 저는 앞으로 Tailwind와 shadncn을 메인 css기술로 사용할 거 같아요.**
+실제로 이 블로그도 Tailwind, shadcn을 이용해서 만들었어요! 🍀
+
+### 마무리
+<Callout type="warn">
+  오늘은 여러 css 라이브러리를 비교 정리 해보는 글을 작성 해봤어요
+  이 글이 css 라이브러리 선택에 도움이 되었으면 좋겠네요!
+</Callout>
+
+### 참고자료
+[React CSS에 대한 심오한 고찰](https://velog.io/@hoonnn/React-CSS%EC%97%90-%EB%8C%80%ED%95%9C-%EC%8B%AC%EC%98%A4%ED%95%9C-%EA%B3%A0%EC%B0%B0)
+[CSS Modules vs CSS-in-JS. Who wins?](https://dev.to/alexsergey/css-modules-vs-css-in-js-who-wins-3n25)

@@ -25,7 +25,7 @@ function PostCard({ post }: PostCardProps) {
   } = post
 
   return (
-    <Card className="w-full max-w-md overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-sm hover:border-green-600 hover:shadow-green-400 group">
+    <Card className="w-full max-w-md overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-sm hover:border-green-600 hover:shadow-green-400 group h-[450px]">
       <div className="relative w-full h-48">
         <Image
           src={thumbnail}

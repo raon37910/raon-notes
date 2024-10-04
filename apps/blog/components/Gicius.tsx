@@ -21,7 +21,7 @@ export default function Giscus() {
     scriptElem.setAttribute('data-repo', 'raon37910/raon-notes')
     scriptElem.setAttribute('data-repo-id', 'R_kgDOM0nBqg')
     scriptElem.setAttribute('data-category', 'Comments')
-    scriptElem.setAttribute('data-category-id', '')
+    scriptElem.setAttribute('data-category-id', 'DIC_kwDOM0nBqs4CjC98')
     scriptElem.setAttribute('data-mapping', 'pathname')
     scriptElem.setAttribute('data-strict', '0')
     scriptElem.setAttribute('data-reactions-enabled', '1')
