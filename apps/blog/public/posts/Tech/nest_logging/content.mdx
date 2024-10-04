@@ -1,0 +1,187 @@
+---
+title: 'NestJS 로깅 설정 방법'
+date: 2024-10-04
+desc: 로그 없인 못 살아~ 정말 못살아~
+thumbnail: /posts/Tech/nest_logging/thumbnail.png
+---
+
+<Callout type="info">
+  NestJS 로깅 설정 방법에 대해 알아봅시다.
+  프로젝트에 직접 작성했기 때문에 아마 틀린 내용은 없을 거에요!
+</Callout>
+
+## 로그는 왜 남겨야 할까?
+프로그램을 개발하고 유지하다 보면, 시스템 내부에서 어떤 일이 일어났었는지 확인하고 싶을 때가 있어요.
+예를 들면 특정 시간에 API가 호출 되었다거나, 또는 개발하면서 예상치 못한 오류가 발생했을 때와 같이요.
+이럴 때 **미리 로그를 남겨두면 시스템 내부에서 있었던 일을 확인하여 문제를 해결하는데 단서를 제공받을 수 있어요**
+
+## 로그 라이브러리를 사용하는 이유
+저는 처음에 로그를 남길 때 console.log를 사용 했어요.
+console.log는 가볍게 로그를 확인 하기에는 최고의 도구이지만, 운영까지 고려하는 시스템에서 사용하기에는 몇 가지 문제가 있어요.
+
+### 문제점
+- 로그를 파일화 하기 위해서는 추가적인 코드를 작성해야 한다.
+- 환경마다 로그를 다르게 남기기 위해서는 추가적인 코드가 필요하다.
+- 로그에 스타일을 주는 코드를 직접 작성해야 한다.
+
+이러한 문제점 때문에 저는 로그 라이브러리를 사용하기로 했어요.
+node진영에서 많이 쓰는 로그 라이브러리로는 winston, pino, morgan 등이 존재하는 것 같은데요.
+로깅 라이브러리를 선택할 때는 성능은 고려 하지 않고, 다양한 기능을 제공하는 winston을 사용 해보기로 했어요.
+실제로 사용해보니, 다양한 기능을 제공하기는 하는데 제가 그 기능을 모두 활용하지는 않아서 앞으로는 pino를 사용하지 않을까 생각하고 있어요 🤣
+
+## 로그 로직은 어디에 구현해야 할까?
+
+<div style={{ display: 'flex', justifyContent: 'center' }}>
+  <img src="https://github.com/user-attachments/assets/8f581ef6-3642-476c-bc45-e655c4b0e026" />
+</div>
+
+로깅이라는 기능은 프로젝트 전체에 필요한 기능이죠?
+이러한 기능을 프로젝트의 로직이 들어간 코드에 직접 구현하기 보다는, NestJS에서 제공하는 미들웨어나, 인터셉터를 활용하는 것이 좋아요.
+
+## 미들웨어, 인터셉터, 필터, 가드
+
+<div style={{ display: 'flex', justifyContent: 'center' }}>
+  <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FpxetH%2FbtrLzFcz7Ra%2Fopld6Rx6gLtjnNA4ohHDhK%2Fimg.jpg" />
+</div>
+
+NestJS에서는 라우트 핸들러가 호출 되기 전/후에 요청 응답 객체에 접근할 수 있는 기능을 제공해요.
+**미들웨어의 경우는 핸들러 처리 전에만, 인터셉터의 경우에는 핸들러 처리 전/후, 필터는 주로 예외처리, 가드는 파라미터 값 검증에 주로 사용해요.**
+이번 예제를 만들 때는 미들웨어와, 인터셉터의 차이점을 몰라서 미들웨어에 로깅을 구현했는데 핸들러 처리 후에 로깅을 남길 수 없어서 인터셉터 사용이 좋아 보이네요 🤣
+
+## 구현
+
+### Global Middleware
+```ts
+// 생략
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*')
+    // 생략
+  }
+}
+```
+NestJS에서 제공하는 모듈은 configure라는 메소드에서 제공하는 consumer 객체를 통해서 미들웨어를 등록할 수 있어요.
+위 코드는 LoggerMiddleware를 모든 라우트에 적용하는 코드에요.
+
+### Logger Middleware
+```ts
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+  constructor() {}
+
+  use(req: Request, res: Response, next: () => void) {
+    const loggerService = new LoggerService(
+      req.url.slice(1).split('/')[req.url.slice(1).split('/').length - 1],
+    )
+    // TODO 로깅 데이터 형식은 조금 더 고민 후 수정 필요
+    const tempUrl = req.method + ' ' + req.url.split('?')[0]
+    const _headers = req.headers ? req.headers : {}
+    const _query = req.query ? req.query : {}
+    const _body = req.body ? req.body : {}
+    const _url = tempUrl ? tempUrl : {}
+
+    loggerService.log(
+      JSON.stringify({
+        url: _url,
+        headers: _headers,
+        query: _query,
+        body: _body,
+      }),
+    )
+
+    next()
+  }
+}
+```
+
+이 코드는 Global Middleware에서 로깅을 위해 사용한 코드에요.
+저도 로그를 많이 활용해보지는 않아서, 깃헙에 있는 코드를 그대로 사용하고 있고 추후에 필요한 형식대로 변경해서 사용할 예정이에요
+
+### Logger Service
+
+```ts
+const { errors, combine, timestamp, printf } = winston.format
+
+export class LoggerService implements NestLoggerService {
+  private logger: winston.Logger
+
+  constructor(service: string) {
+    this.logger = winston.createLogger({
+      transports: [
+        winstonConsoleTransportGenerator(service),
+        winstonErrorFileTransportGenerator(),
+        winstonFileTransportGenerator(),
+      ],
+    })
+  }
+
+  log(message: string) {
+    this.logger.log({ level: 'info', message })
+  }
+
+  error(message: string) {
+    this.logger.log({ level: 'error', message })
+  }
+
+  warn(message: string) {
+    this.logger.log({ level: 'warn', message })
+  }
+
+  debug?(message: string) {
+    this.logger.log({ level: 'debug', message })
+  }
+
+  verbose?(message: string) {
+    this.logger.log({ level: 'verbose', message })
+  }
+}
+
+/**
+ *  ==================================
+ *    Logger Transport Generator
+ *  ==================================
+ */
+const winstonConsoleTransportGenerator = (service: string) =>
+  new winston.transports.Console({
+    level: 'debug',
+    format: combine(
+      timestamp({ format: 'isoDateTime' }),
+      utilities.format.nestLike(service, {
+        prettyPrint: true,
+      }),
+    ),
+  })
+
+const winstonErrorFileTransportGenerator = () =>
+  new winston.transports.File({
+    level: 'error',
+    filename: `error-${moment(new Date()).format('YYYY-MM-DD')}.log`,
+    dirname: 'logs',
+    maxsize: 5000000,
+    format: combine(
+      errors({ stack: true }),
+      timestamp({ format: 'isoDateTime' }),
+      printf((info) => {
+        return `${info.message}`
+      }),
+    ),
+  })
+
+const winstonFileTransportGenerator = () =>
+  new winston.transports.File({
+    filename: `application-${moment(new Date()).format('YYYY-MM-DD')}.log`,
+    dirname: 'logs',
+    maxsize: 5000000,
+    format: combine(
+      timestamp({ format: 'isoDateTime' }),
+      printf((info) => {
+        return `${info.message}`
+      }),
+    ),
+  })
+
+```
+
+실제로 로그를 남길때 사용하는 코드가 위 LoggerService에요.
+Generator 함수를 통해서, 파일 및 콘솔에서 남길 로그의 형식과 파일 이름을 정의하여 사용할 수 있어요.
+
